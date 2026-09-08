@@ -1,5 +1,7 @@
 # Luna Absolute Cinema
 
+[![Ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/matata86)
+
 Server **Luna: Absolute Cinema** (Stremio addon server pro WebShare) jako addon Home Assistantu. Jedna instalace obslouží Stremio, Nuvio i Kodi (doplněk [Nokturno](https://github.com/matata86/plugin.video.nokturno)) na všech zařízeních v síti.
 
 ## Binárka Luny
@@ -75,3 +77,13 @@ services:
 ```
 
 Windows/macOS: stáhni zip pro svou platformu z fóra a spusť aplikaci — má stejné `/setup`.
+
+---
+
+## Podpora
+
+Pomohlo ti to? Kafe autorovi udělá radost ☕
+
+[![Ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/matata86)
+
+**https://ko-fi.com/matata86**

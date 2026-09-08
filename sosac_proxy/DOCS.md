@@ -1,5 +1,7 @@
 # Sosáč proxy pro Nuvio
 
+[![Ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/matata86)
+
 Doplněk **Sosáč TV** pro Stremio funguje ve Stremiu, ale v **Nuviu** se detail titulu nenačte: Sosáč vrací `language` a `country` jako pole a `imdbRating` jako číslo, zatímco Stremio protokol čeká řetězce — striktní parser Nuvia na tom spadne (`JsonArray is not a JsonPrimitive`).
 
 Tato proxy přeposílá všechny požadavky (manifest, catalog, meta, stream) 1:1 na `stremio.sosac.tv` a jen v odpovědích `meta`/`metas` ta tři pole narovná. Nic jiného nemění, nic neukládá.
@@ -80,3 +82,13 @@ WantedBy=multi-user.target
 ```
 
 `sudo systemctl enable --now sosac-proxy`
+
+---
+
+## Podpora
+
+Pomohlo ti to? Kafe autorovi udělá radost ☕
+
+[![Ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/matata86)
+
+**https://ko-fi.com/matata86**
