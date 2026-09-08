@@ -4,8 +4,9 @@ set -e
 CONFIG=/data/options.json
 PORT=$(jq -r '.port // 7126' "$CONFIG")
 HTTPS_PORT=$(jq -r '.https_port // 7127' "$CONFIG")
-ENABLE_HTTPS=$(jq -r '.enable_https // true' "$CONFIG")
-NO_UPDATE=$(jq -r '.no_update // true' "$CONFIG")
+# pozor: jq „//“ bere false jako null → false by se změnilo na true
+ENABLE_HTTPS=$(jq -r 'if .enable_https == null then true else .enable_https end' "$CONFIG")
+NO_UPDATE=$(jq -r 'if .no_update == null then true else .no_update end' "$CONFIG")
 BIN_URL=$(jq -r '.luna_binary_url // ""' "$CONFIG")
 BIN=/data/luna
 

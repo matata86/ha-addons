@@ -1,5 +1,5 @@
 name: Luna Absolute Cinema
-version: "1.6.0.3"
+version: "1.6.0.4"
 slug: luna
 description: Luna Absolute Cinema — Stremio/Nuvio/Kodi server pro přehrávání z WebShare. Binárku Luny si addon vezme z /share/luna/ nebo ji stáhne z adresy v nastavení.
 url: https://github.com/matata86/ha-addons/tree/main/luna
