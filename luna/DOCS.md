@@ -28,3 +28,50 @@ Addon si binárku uloží do `/data` a při každém startu ji z `/share/luna/lu
 - Nuvio a Kodi (Nokturno): stačí HTTP adresa doplňku ze setupu
 
 Addon běží v `host_network`, protože Luna nabízí instalační adresu podle IP, na které poslouchá — v bridge síti Dockeru by nabídla vnitřní IP kontejneru.
+
+## Bez Home Assistantu
+
+Luna je jedna binárka, HA je jen pohodlný obal. Stejné `luna-x_y_z-linux-amd64` (nebo verze pro Windows/macOS/ARM z fóra) spustíš přímo na libovolném počítači, který běží pořád — NAS, Raspberry Pi (verze `linux-arm64`), mini PC:
+
+```bash
+chmod +x luna-1_6_0-linux-amd64
+./luna-1_6_0-linux-amd64 --https --no-update
+```
+
+Setup pak najdeš na `http://<IP-počítače>:7126/setup`, HTTPS pro Stremio na `https://<IP-s-pomlčkami>.my.local-ip.co:7127/setup`. Parametry `--port`, `--https-port`, `--https` viz `luna --help`.
+
+**Aby běžela pořád (Linux, systemd):**
+
+```ini
+# /etc/systemd/system/luna.service
+[Unit]
+Description=Luna Absolute Cinema
+After=network-online.target
+
+[Service]
+ExecStart=/opt/luna/luna --https --no-update
+WorkingDirectory=/opt/luna
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
+```
+
+`sudo systemctl enable --now luna`
+
+**Docker** (na NAS): binárka je statická, stačí minimální image s host sítí:
+
+```yaml
+services:
+  luna:
+    image: alpine:3
+    container_name: luna
+    restart: unless-stopped
+    network_mode: host      # Luna musí vidět skutečnou IP kvůli instalační adrese doplňku
+    volumes:
+      - ./luna:/luna:ro
+      - ./data:/root
+    command: /luna --https --no-update
+```
+
+Windows/macOS: stáhni zip pro svou platformu z fóra a spusť aplikaci — má stejné `/setup`.
