@@ -28,6 +28,13 @@ Podrobnosti a nastavení: [luna/DOCS.md](luna/DOCS.md).
 
 Jen pokud používáš Sosáč v **Nuviu**. Nastav `user_id` (ze Stremio adresy Sosáče, část za `?userId=`), spusť addon a v Nuviu nainstaluj `http://IP-HA:7128/manifest.json`. Podrobnosti: [sosac_proxy/DOCS.md](sosac_proxy/DOCS.md).
 
+## Nemáš Home Assistant?
+
+Oba addony jsou obyčejné programy, HA je jen obal:
+
+- **Luna** — spusť binárku přímo na NAS / Raspberry / mini PC (`./luna --https --no-update`), nebo přes Docker; návod v [luna/DOCS.md](luna/DOCS.md#bez-home-assistantu).
+- **Sosáč proxy** — jeden soubor `proxy.py` v čistém Pythonu, poběží i na PC s Nuviem (`USER_ID=… python3 proxy.py`), Docker compose i systemd v [sosac_proxy/DOCS.md](sosac_proxy/DOCS.md#bez-home-assistantu).
+
 ## Architektura
 
 ```
