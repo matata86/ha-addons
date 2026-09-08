@@ -1,6 +1,6 @@
 # Nokturno add-ons pro Home Assistant
 
-Doplňky pro Home Assistant kolem českého streamování — společně s Kodi doplňkem [Nokturno](https://github.com/matata86/plugin.video.luna) tvoří jeden celek: **Luna** běží jednou na HA a obslouží Stremio, Nuvio i Kodi v celé domácnosti.
+Doplňky pro Home Assistant kolem českého streamování — společně s Kodi doplňkem [Nokturno](https://github.com/matata86/plugin.video.nokturno) tvoří jeden celek: **Luna** běží jednou na HA a obslouží Stremio, Nuvio i Kodi v celé domácnosti.
 
 [![Přidat repozitář do Home Assistantu](https://my.home-assistant.io/badges/supervisor_add_addon_repository.svg)](https://my.home-assistant.io/redirect/supervisor_add_addon_repository/?repository_url=https%3A%2F%2Fgithub.com%2Fmatata86%2Fha-addons)
 
