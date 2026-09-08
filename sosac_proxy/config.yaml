@@ -1,0 +1,27 @@
+name: Sosáč proxy pro Nuvio
+version: "1.0.1"
+slug: sosac_proxy
+description: Proxy Stremio doplňku Sosáč TV, která opravuje meta odpovědi (language/country/imdbRating), na kterých padá striktní parser Nuvia. V Nuviu nainstaluj adresu proxy místo originálu.
+url: https://github.com/matata86/ha-addons/tree/main/sosac_proxy
+arch:
+  - amd64
+  - aarch64
+  - armv7
+init: false
+startup: services
+boot: auto
+homeassistant_api: false
+hassio_api: false
+webui: "http://[HOST]:[PORT:7128]/"
+ports:
+  7128/tcp: 7128
+ports_description:
+  7128/tcp: HTTP proxy doplňku (manifest.json pro Nuvio)
+options:
+  upstream: "https://stremio.sosac.tv/cs"
+  user_id: ""
+  port: 7128
+schema:
+  upstream: url
+  user_id: str?
+  port: port
