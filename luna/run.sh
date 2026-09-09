@@ -23,7 +23,7 @@ elif [ ! -f "$BIN" ] && [ -n "$BIN_URL" ]; then
 fi
 
 if [ ! -f "$BIN" ]; then
-  echo "[luna] CHYBA: chybí binárka Luny. Nahraj soubor luna-x_y_z-linux-amd64 jako /share/luna/luna"
+  echo "[luna] CHYBA: chybí binárka Luny. Nahraj soubor luna-x_y_z-linux-<arch> (amd64/arm64/arm) jako /share/luna/luna"
   echo "[luna]        (přes Samba: share/luna/luna) nebo vyplň luna_binary_url v nastavení addonu."
   exit 1
 fi
