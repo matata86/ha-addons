@@ -6,7 +6,13 @@ Server **Luna: Absolute Cinema** (Stremio addon server pro WebShare) jako addon 
 
 ## Binárka Luny
 
-Luna není volně šiřitelná, proto ji addon neobsahuje. Stáhni **`luna-x_y_z-linux-amd64`** z fóra [stremio.cz](https://stremio.cz/d/47-luna-absolute-cinema-addon-pro-prehravani-sifrovaneho-obsahu-z-webshare) a:
+Luna není volně šiřitelná, proto ji addon neobsahuje. Stáhni binárku pro architekturu svého HA z fóra [stremio.cz](https://stremio.cz/d/47-luna-absolute-cinema-addon-pro-prehravani-sifrovaneho-obsahu-z-webshare):
+
+- **amd64** (PC, Intel NUC, většina VM) → `luna-x_y_z-linux-amd64`
+- **aarch64** (Raspberry Pi ve 64bit HAOS, což je dnes většina RPi instalací) → `luna-x_y_z-linux-arm64`
+- **armv7** (32bit HAOS, starší Raspberry Pi) → `luna-x_y_z-linux-arm`
+
+Architekturu svého HA zjistíš v **Nastavení → Systém → Hardware** (nebo Supervisor → Systém). Soubor pak:
 
 - **buď** ji nahraj do sdílené složky HA jako `share/luna/luna` (přes Samba addon → složka `share`, podsložka `luna`, soubor pojmenuj `luna`),
 - **nebo** vyplň `luna_binary_url` – přímou adresu ke stažení (např. z vlastního NAS/webu).
