@@ -5,6 +5,8 @@ description: Luna Absolute Cinema — Stremio/Nuvio/Kodi server pro přehráván
 url: https://github.com/matata86/ha-addons/tree/main/luna
 arch:
   - amd64
+  - aarch64
+  - armv7
 init: false
 startup: services
 boot: auto
