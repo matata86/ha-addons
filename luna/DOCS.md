@@ -6,24 +6,32 @@ Server **Luna: Absolute Cinema** (Stremio addon server pro WebShare) jako addon 
 
 ## Binárka Luny
 
-Luna není volně šiřitelná, proto ji addon neobsahuje. Stáhni binárku pro architekturu svého HA z fóra [stremio.cz](https://stremio.cz/d/47-luna-absolute-cinema-addon-pro-prehravani-sifrovaneho-obsahu-z-webshare):
+Luna není volně šiřitelná, proto ji addon neobsahuje. Stáhni binárku(y) pro architekturu(y) svého HA z fóra [stremio.cz](https://stremio.cz/d/47-luna-absolute-cinema-addon-pro-prehravani-sifrovaneho-obsahu-z-webshare):
 
 - **amd64** (PC, Intel NUC, většina VM) → `luna-x_y_z-linux-amd64`
 - **aarch64** (Raspberry Pi ve 64bit HAOS, což je dnes většina RPi instalací) → `luna-x_y_z-linux-arm64`
 - **armv7** (32bit HAOS, starší Raspberry Pi) → `luna-x_y_z-linux-arm`
 
-Architekturu svého HA zjistíš v **Nastavení → Systém → Hardware** (nebo Supervisor → Systém). Soubor pak:
+Soubory nahraj do sdílené složky HA (Samba addon → složka `share`, podsložka `luna`) a přejmenuj podle architektury, kterou obsahují:
 
-- **buď** ji nahraj do sdílené složky HA jako `share/luna/luna` (přes Samba addon → složka `share`, podsložka `luna`, soubor pojmenuj `luna`),
-- **nebo** vyplň `luna_binary_url` – přímou adresu ke stažení (např. z vlastního NAS/webu).
+- `share/luna/luna-amd64`
+- `share/luna/luna-aarch64`
+- `share/luna/luna-armv7`
 
-Addon si binárku uloží do `/data` a při každém startu ji z `/share/luna/luna` obnoví, pokud se změnila – nová verze Luny = jen přepsat soubor a restartovat addon.
+Klidně tam nahraj **všechny tři najednou** — addon si při startu sám zjistí architekturu HA (`uname -m`) a použije odpovídající soubor, ostatní ignoruje. Jedna sdílená složka tak funguje pro všechny instalace v síti bez ohledu na to, na jakém HW běží. Pokud chceš použít jinou architekturu, než jakou má tvůj HA (např. test), přepni ji v nastavení addonu volbou **Architektura binárky** (`auto` / `amd64` / `aarch64` / `armv7`).
+
+Starší jednoarchové instalace mohou nadále používat `share/luna/luna` (bez přípony) — pořád funguje jako záloha, když soubor pro danou architekturu chybí.
+
+Alternativa bez Samby: vyplň `luna_binary_url` – přímou adresu ke stažení (např. z vlastního NAS/webu). Pokud adresa obsahuje `{arch}`, addon ho při stahování nahradí za `amd64`/`aarch64`/`armv7` podle zjištěné architektury — jedna URL tak může mířit na všechny varianty najednou.
+
+Addon si binárku uloží do `/data` a při každém startu ji ze sdílené složky obnoví, pokud se změnila – nová verze Luny = jen přepsat soubor(y) a restartovat addon.
 
 ## Nastavení
 
 | volba | výchozí | význam |
 |---|---|---|
-| `luna_binary_url` | prázdné | adresa ke stažení binárky, když není v `/share/luna/` |
+| `luna_binary_url` | prázdné | adresa ke stažení binárky, když není v `/share/luna/`; podporuje `{arch}` jako zástupný symbol |
+| `luna_arch` | `auto` | architektura binárky (`auto` = podle HW HA, nebo vynuceně `amd64`/`aarch64`/`armv7`) |
 | `port` | 7126 | HTTP port |
 | `https_port` | 7127 | HTTPS port (Stremio v LAN ho vyžaduje) |
 | `enable_https` | true | zapne HTTPS s certifikátem local-ip.co |
