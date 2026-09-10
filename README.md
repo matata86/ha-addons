@@ -1,4 +1,4 @@
-# Nokturno add-ons pro Home Assistant
+# FNS addons
 
 [![Ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/matata86)
 
@@ -16,11 +16,11 @@ Doplňky pro Home Assistant kolem českého streamování — společně s Kodi 
 
 1. Home Assistant → **Nastavení → Doplňky → Obchod s doplňky → ⋮ (vpravo nahoře) → Repozitáře**
 2. Vlož `https://github.com/matata86/ha-addons` a potvrď (nebo klikni na tlačítko výše).
-3. V obchodě se objeví sekce *Nokturno add-ons pro Home Assistant* → vyber addon → **Instalovat**.
+3. V obchodě se objeví sekce *FNS addons* → vyber addon → **Instalovat**.
 
 ### Luna – co je potřeba navíc
 
-Luna není volně šiřitelná binárka, proto ji addon neobsahuje. Stáhni `luna-x_y_z-linux-amd64` z [fóra stremio.cz](https://stremio.cz/d/47-luna-absolute-cinema-addon-pro-prehravani-sifrovaneho-obsahu-z-webshare) a nahraj ji přes Samba do sdílené složky HA jako **`share/luna/luna`** (nebo vyplň `luna_binary_url`). Pak addon spusť a otevři jeho webové rozhraní (`http://IP-HA:7126/setup`), kde přihlásíš WebShare a dostaneš adresy doplňku:
+Luna není volně šiřitelná binárka, proto ji addon neobsahuje. Stáhni `luna-x_y_z-linux-<amd64|arm64|arm>` z [fóra stremio.cz](https://stremio.cz/d/47-luna-absolute-cinema-addon-pro-prehravani-sifrovaneho-obsahu-z-webshare) podle architektury svého HA a nahraj ji přes Samba do sdílené složky HA jako **`share/luna/luna-<amd64|aarch64|armv7>`** (klidně víc architektur najednou vedle sebe, addon si vybere tu svou automaticky; nebo vyplň `luna_binary_url`). Pak addon spusť a otevři jeho webové rozhraní (`http://IP-HA:7126/setup`), kde přihlásíš WebShare a dostaneš adresy doplňku:
 
 - **Stremio v LAN** — instaluj přes HTTPS adresu `https://192-168-x-y.my.local-ip.co:7127/…` (Stremio jiné než HTTPS v LAN nepřijme)
 - **Nuvio, Kodi (Nokturno)** — stačí HTTP adresa `http://IP-HA:7126/…`
