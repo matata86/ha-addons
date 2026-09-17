@@ -100,7 +100,11 @@ h2{{font-size:1.05rem;margin:0 0 .5rem}}
 code{{background:var(--pole);border:1px solid var(--okraj);padding:.1rem .4rem;
      border-radius:6px;font-size:.85em}}
 input[type=file]{{display:block;width:100%;background:var(--pole);border:1px solid var(--okraj);
-     color:var(--text);border-radius:8px;padding:.6rem .7rem;font-size:.9rem;margin-bottom:.9rem}}
+     color:var(--tlumene);border-radius:8px;padding:.55rem .7rem;font-size:.9rem;margin-bottom:.9rem}}
+input[type=file]::file-selector-button{{background:var(--panel-2);color:var(--text);
+     border:1px solid var(--okraj);border-radius:7px;padding:.45rem .9rem;font-size:.85rem;
+     font-weight:600;cursor:pointer;margin-right:.8rem}}
+input[type=file]::file-selector-button:hover{{background:var(--okraj)}}
 .btn{{display:inline-flex;align-items:center;gap:.4rem;border:0;border-radius:9px;
      padding:.65rem 1.3rem;font-size:.92rem;font-weight:600;cursor:pointer;
      text-decoration:none;color:#fff}}
