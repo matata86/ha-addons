@@ -5,8 +5,9 @@ FROM $BUILD_FROM
 # Alpine/musl kernel/loader ji vůbec nespustí (execve ENOENT, exit 127).
 # Samotná binárka se do image nekopíruje (není volně šiřitelná): addon ji při startu
 # vezme z /share/luna/luna, nebo stáhne z adresy v nastavení, a uloží do /data.
-RUN apt-get update && apt-get install -y --no-install-recommends bash jq curl ca-certificates tzdata \
+RUN apt-get update && apt-get install -y --no-install-recommends bash jq curl ca-certificates tzdata python3 \
     && rm -rf /var/lib/apt/lists/*
 COPY run.sh /run.sh
+COPY webui.py /webui.py
 RUN chmod +x /run.sh
 CMD ["/run.sh"]

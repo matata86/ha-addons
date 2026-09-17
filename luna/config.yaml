@@ -11,15 +11,17 @@ init: false
 startup: services
 boot: auto
 host_network: true
-webui: "http://[HOST]:[PORT:7126]/setup"
+webui: "http://[HOST]:[PORT:7130]/"
 map:
-  - share:ro
+  - share:rw
 ports:
   7126/tcp: 7126
   7127/tcp: 7127
+  7130/tcp: 7130
 ports_description:
   7126/tcp: HTTP server Luny (konfigurace na /setup, doplněk pro Nuvio a Kodi)
   7127/tcp: HTTPS server Luny (nutný pro Stremio v LAN přes doménu local-ip)
+  7130/tcp: Webové rozhraní doplňku (stav, nahrání binárky, odkaz na /setup)
 options:
   luna_binary_url: ""
   luna_arch: auto
