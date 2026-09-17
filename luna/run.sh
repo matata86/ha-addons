@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-set -e
 
 CONFIG=/data/options.json
 PORT=$(jq -r '.port // 7126' "$CONFIG")
@@ -23,45 +22,74 @@ else
   esac
 fi
 echo "[luna] architektura: $ARCH (nastavení: $ARCH_OPT)"
+export ARCH
+export WEBUI_PORT=7130
 
-# 1) binárka pro danou architekturu ve sdílené složce HA (share/luna/luna-<arch>)
-#    2) starší jednoarchová instalace (share/luna/luna, bez rozlišení architektury)
-#    3) stažení z adresy v nastavení (jen když ještě žádnou nemáme); {arch} v URL se
-#       nahradí za amd64/aarch64/armv7, takže jedna adresa může mířit na všechny archivy
-SHARE_BIN=""
-if [ -f "/share/luna/luna-$ARCH" ]; then
-  SHARE_BIN="/share/luna/luna-$ARCH"
-elif [ -f /share/luna/luna ]; then
-  SHARE_BIN="/share/luna/luna"
-fi
-
-if [ -n "$SHARE_BIN" ]; then
-  if ! cmp -s "$SHARE_BIN" "$BIN"; then
-    echo "[luna] beru binárku z $SHARE_BIN"
-    cp "$SHARE_BIN" "$BIN"
-  fi
-elif [ ! -f "$BIN" ] && [ -n "$BIN_URL" ]; then
-  BIN_URL="${BIN_URL//\{arch\}/$ARCH}"
-  echo "[luna] stahuji binárku z $BIN_URL"
-  curl -fsSL "$BIN_URL" -o "$BIN.tmp" && mv "$BIN.tmp" "$BIN"
-fi
-
-if [ ! -f "$BIN" ]; then
-  echo "[luna] CHYBA: chybí binárka Luny pro architekturu $ARCH."
-  echo "[luna]        Nahraj soubor jako /share/luna/luna-$ARCH (víc architektur najednou:"
-  echo "[luna]        luna-amd64, luna-aarch64, luna-armv7 vedle sebe) nebo starší /share/luna/luna"
-  echo "[luna]        (přes Samba: share/luna/), případně vyplň luna_binary_url v nastavení addonu."
-  exit 1
-fi
-chmod +x "$BIN"
+# Webové rozhraní doplňku (stav, upload binárky, odkaz na /setup Luny) — běží
+# na pozadí nezávisle na tom, jestli/jak Luna zrovna běží.
+python3 /webui.py &
 
 # Perzistentní data (konfigurace, tokeny) – /data přežije restart i update addonu
 export HOME=/data
 cd /data
 
-ARGS=(-port "$PORT" -https-port "$HTTPS_PORT")
-[ "$ENABLE_HTTPS" = "true" ] && ARGS+=(-https)
-[ "$NO_UPDATE" = "true" ] && ARGS+=(-no-update)
+RESTART_FLAG=/data/.restart_flag
+rm -f "$RESTART_FLAG"
 
-echo "[luna] spouštím: luna ${ARGS[*]}"
-exec "$BIN" "${ARGS[@]}"
+# Smyčka místo jednorázového `exec`: umožňuje restartovat Lunu po nahrání nové
+# binárky přes webui, aniž by se restartoval celý addon.
+while true; do
+  # 1) binárka pro danou architekturu ve sdílené složce HA (share/luna/luna-<arch>)
+  #    2) starší jednoarchová instalace (share/luna/luna, bez rozlišení architektury)
+  #    3) stažení z adresy v nastavení (jen když ještě žádnou nemáme); {arch} v URL se
+  #       nahradí za amd64/aarch64/armv7, takže jedna adresa může mířit na všechny archivy
+  SHARE_BIN=""
+  if [ -f "/share/luna/luna-$ARCH" ]; then
+    SHARE_BIN="/share/luna/luna-$ARCH"
+  elif [ -f /share/luna/luna ]; then
+    SHARE_BIN="/share/luna/luna"
+  fi
+
+  if [ -n "$SHARE_BIN" ]; then
+    if ! cmp -s "$SHARE_BIN" "$BIN"; then
+      echo "[luna] beru binárku z $SHARE_BIN"
+      cp "$SHARE_BIN" "$BIN"
+    fi
+  elif [ ! -f "$BIN" ] && [ -n "$BIN_URL" ]; then
+    BIN_URL_RESOLVED="${BIN_URL//\{arch\}/$ARCH}"
+    echo "[luna] stahuji binárku z $BIN_URL_RESOLVED"
+    curl -fsSL "$BIN_URL_RESOLVED" -o "$BIN.tmp" && mv "$BIN.tmp" "$BIN"
+  fi
+
+  if [ ! -f "$BIN" ]; then
+    echo "[luna] CHYBA: chybí binárka Luny pro architekturu $ARCH."
+    echo "[luna]        Nahraj ji přes webové rozhraní doplňku (port $WEBUI_PORT), jako"
+    echo "[luna]        /share/luna/luna-$ARCH přes Samba, nebo vyplň luna_binary_url v nastavení."
+    sleep 5
+    continue
+  fi
+  chmod +x "$BIN"
+
+  ARGS=(-port "$PORT" -https-port "$HTTPS_PORT")
+  [ "$ENABLE_HTTPS" = "true" ] && ARGS+=(-https)
+  [ "$NO_UPDATE" = "true" ] && ARGS+=(-no-update)
+
+  echo "[luna] spouštím: luna ${ARGS[*]}"
+  "$BIN" "${ARGS[@]}" &
+  LUNA_PID=$!
+
+  while kill -0 "$LUNA_PID" 2>/dev/null; do
+    if [ -f "$RESTART_FLAG" ]; then
+      echo "[luna] restart vyžádán z webui, ukončuji proces…"
+      rm -f "$RESTART_FLAG"
+      kill "$LUNA_PID" 2>/dev/null
+      wait "$LUNA_PID" 2>/dev/null
+      break
+    fi
+    sleep 1
+  done
+  wait "$LUNA_PID" 2>/dev/null
+
+  echo "[luna] proces skončil, restart za 2 s…"
+  sleep 2
+done
