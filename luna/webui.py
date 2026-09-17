@@ -4,6 +4,7 @@
 Neřeší nic z Luny samotné (uzavřený binární program) — jen ulehčuje výměnu
 binárky, kterou dřív šlo nahrát jen přes Samba/SFTP do /share/luna/.
 """
+import base64
 import http.server
 import json
 import os
@@ -11,6 +12,7 @@ import re
 import socket
 
 CONFIG_PATH = "/data/options.json"
+ICON_PATH = "/icon.png"
 SHARE_DIR = "/share/luna"
 VERSION_FILE = "/data/luna_version.txt"
 RESTART_FLAG = "/data/.restart_flag"
@@ -65,6 +67,17 @@ def bin_path():
     return os.path.join(SHARE_DIR, f"luna-{ARCH}")
 
 
+def load_icon_data_uri():
+    try:
+        with open(ICON_PATH, "rb") as f:
+            return "data:image/png;base64," + base64.b64encode(f.read()).decode("ascii")
+    except FileNotFoundError:
+        return ""
+
+
+ICON_DATA_URI = load_icon_data_uri()
+
+
 PAGE_TMPL = """<!doctype html>
 <html lang="cs"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -80,8 +93,8 @@ PAGE_TMPL = """<!doctype html>
 body{{font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;max-width:736px;
      margin:2.5rem auto;padding:0 1.25rem 3rem;background:var(--pozadi);color:var(--text)}}
 header{{display:flex;align-items:center;gap:.8rem;margin-bottom:1.5rem}}
-.logo{{width:44px;height:44px;border-radius:12px;background:linear-gradient(160deg,var(--akcent),var(--akcent-tmavy));
-      display:flex;align-items:center;justify-content:center;font-size:1.4rem;flex:none}}
+.logo{{width:44px;height:44px;border-radius:12px;flex:none;display:block;object-fit:cover;
+      background:var(--panel-2)}}
 h1{{font-size:1.35rem;font-weight:700;margin:0}}
 .sub{{color:var(--tlumene);font-size:.85rem;margin-top:.15rem}}
 .panel{{background:var(--panel);border:1px solid var(--okraj);border-radius:14px;
@@ -114,7 +127,7 @@ input[type=file]::file-selector-button:hover{{background:var(--okraj)}}
 .msg.err{{color:var(--chyba)}} .msg.okmsg{{color:var(--ok)}}
 </style></head><body>
 <header>
-  <div class="logo">🌙</div>
+  <img class="logo" src="{icon}" alt="Luna">
   <div>
     <h1>Luna Absolute Cinema</h1>
     <div class="sub">Správa doplňku</div>
@@ -160,6 +173,7 @@ def render(handler, message=""):
         host=host,
         luna_port=luna_port(),
         forum_url=FORUM_URL,
+        icon=ICON_DATA_URI,
     ).encode("utf-8")
     handler.send_response(200)
     handler.send_header("Content-Type", "text/html; charset=utf-8")
