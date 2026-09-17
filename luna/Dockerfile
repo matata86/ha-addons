@@ -9,5 +9,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends bash jq curl ca
     && rm -rf /var/lib/apt/lists/*
 COPY run.sh /run.sh
 COPY webui.py /webui.py
+COPY icon.png /icon.png
 RUN chmod +x /run.sh
 CMD ["/run.sh"]
