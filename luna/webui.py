@@ -70,40 +70,73 @@ PAGE_TMPL = """<!doctype html>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Luna – správa doplňku</title>
 <style>
-body{{font-family:system-ui,sans-serif;max-width:640px;margin:2rem auto;padding:0 1rem;
-     background:#111417;color:#eee}}
-h1{{font-size:1.4rem}}
-.status{{padding:.75rem 1rem;border-radius:8px;margin:1rem 0;line-height:1.6}}
-.ok{{background:#173a1e}} .bad{{background:#3a1717}}
-.card{{background:#1b1e22;border-radius:10px;padding:1.1rem 1.2rem;margin:1rem 0}}
-button,input[type=submit]{{background:#3d6bdb;color:#fff;border:0;padding:.6rem 1.2rem;
-     border-radius:6px;cursor:pointer;font-size:1rem}}
-a.btn{{display:inline-block;background:#2a2e33;color:#eee;text-decoration:none;
-     padding:.6rem 1.2rem;border-radius:6px;margin-top:.4rem}}
-input[type=file]{{color:#eee;margin:.5rem 0}}
-code{{background:#000;padding:.15rem .35rem;border-radius:4px}}
-.hint{{color:#aaa;font-size:.92rem}}
-.msg{{margin-top:.8rem}}
+:root {{
+  --pozadi:#0d0c1d; --panel:#17162b; --panel-2:#1c1b33; --pole:#201f38; --okraj:#2f2d4d;
+  --text:#e8e6f5; --tlumene:#9a97b8; --akcent:#7b5bf5; --akcent-tmavy:#6547d6;
+  --ok:#3ecf8e; --ok-pozadi:#12291f; --vystraha:#f5a524; --vystraha-pozadi:#2a2214;
+  --chyba:#ff6b6b; --chyba-pozadi:#2c1518;
+}}
+*{{box-sizing:border-box}}
+body{{font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;max-width:736px;
+     margin:2.5rem auto;padding:0 1.25rem 3rem;background:var(--pozadi);color:var(--text)}}
+header{{display:flex;align-items:center;gap:.8rem;margin-bottom:1.5rem}}
+.logo{{width:44px;height:44px;border-radius:12px;background:linear-gradient(160deg,var(--akcent),var(--akcent-tmavy));
+      display:flex;align-items:center;justify-content:center;font-size:1.4rem;flex:none}}
+h1{{font-size:1.35rem;font-weight:700;margin:0}}
+.sub{{color:var(--tlumene);font-size:.85rem;margin-top:.15rem}}
+.panel{{background:var(--panel);border:1px solid var(--okraj);border-radius:14px;
+       padding:1.1rem 1.2rem;margin-bottom:1.1rem}}
+.status-panel{{display:flex;flex-wrap:wrap;gap:.5rem 1.6rem;align-items:center}}
+.status-item{{display:flex;flex-direction:column;gap:.15rem}}
+.status-item .label{{color:var(--tlumene);font-size:.78rem;text-transform:uppercase;letter-spacing:.04em}}
+.status-item .value{{font-size:1rem;font-weight:600}}
+.pill{{display:inline-flex;align-items:center;gap:.35rem;padding:.2rem .65rem;border-radius:999px;
+      font-size:.8rem;font-weight:600;white-space:nowrap}}
+.pill.ok{{background:var(--ok-pozadi);color:var(--ok)}}
+.pill.bad{{background:var(--chyba-pozadi);color:var(--chyba)}}
+h2{{font-size:1.05rem;margin:0 0 .5rem}}
+.hint{{color:var(--tlumene);font-size:.9rem;line-height:1.5;margin:0 0 1rem}}
+.hint a{{color:var(--akcent)}}
+code{{background:var(--pole);border:1px solid var(--okraj);padding:.1rem .4rem;
+     border-radius:6px;font-size:.85em}}
+input[type=file]{{display:block;width:100%;background:var(--pole);border:1px solid var(--okraj);
+     color:var(--text);border-radius:8px;padding:.6rem .7rem;font-size:.9rem;margin-bottom:.9rem}}
+.btn{{display:inline-flex;align-items:center;gap:.4rem;border:0;border-radius:9px;
+     padding:.65rem 1.3rem;font-size:.92rem;font-weight:600;cursor:pointer;
+     text-decoration:none;color:#fff}}
+.btn-primary{{background:linear-gradient(160deg,var(--akcent),var(--akcent-tmavy))}}
+.btn-secondary{{background:var(--pole);color:var(--text);border:1px solid var(--okraj)}}
+.msg{{margin-top:.9rem;font-size:.9rem}}
+.msg.err{{color:var(--chyba)}} .msg.okmsg{{color:var(--ok)}}
 </style></head><body>
-<h1>🌙 Luna Absolute Cinema</h1>
-<div class="status {status_class}">
-  <strong>Stav:</strong> {status_text}<br>
-  <strong>Verze:</strong> {version}<br>
-  <strong>Architektura:</strong> <code>{arch}</code>
+<header>
+  <div class="logo">🌙</div>
+  <div>
+    <h1>Luna Absolute Cinema</h1>
+    <div class="sub">Správa doplňku</div>
+  </div>
+</header>
+
+<div class="panel status-panel">
+  <span class="pill {status_class}">{status_text}</span>
+  <div class="status-item"><span class="label">Verze</span><span class="value">{version}</span></div>
+  <div class="status-item"><span class="label">Architektura</span><span class="value"><code>{arch}</code></span></div>
 </div>
-<div class="card">
-  <h2 style="margin-top:0">Nahrát novou verzi</h2>
+
+<div class="panel">
+  <h2>Nahrát novou verzi</h2>
   <p class="hint">Stáhni novou Lunu z fóra <a href="{forum_url}" target="_blank" rel="noopener">stremio.cz</a>
   (vlákno „Luna: Absolute Cinema"). Pro tenhle doplněk vyber přesně soubor
-  <code>luna-&lt;verze&gt;-{expected_suffix}</code> (žádný windows/macos/apk balíček).</p>
+  <code>luna-&lt;verze&gt;-{expected_suffix}</code> — žádný windows/macos/apk balíček.</p>
   <form method="post" action="/upload" enctype="multipart/form-data">
-    <input type="file" name="binary" accept="*" required><br>
-    <input type="submit" value="Nahrát a restartovat Lunu">
+    <input type="file" name="binary" accept="*" required>
+    <button class="btn btn-primary" type="submit">Nahrát a restartovat Lunu</button>
   </form>
   <div class="msg">{upload_message}</div>
 </div>
-<div class="card">
-  <a class="btn" href="http://{host}:{luna_port}/setup">⚙️ Otevřít nastavení Luny</a>
+
+<div class="panel">
+  <a class="btn btn-secondary" href="http://{host}:{luna_port}/setup">⚙️ Otevřít nastavení Luny</a>
 </div>
 </body></html>
 """
@@ -175,12 +208,12 @@ class Handler(http.server.BaseHTTPRequestHandler):
         boundary_match = re.search(r"boundary=(.+)$", content_type)
         length = int(self.headers.get("Content-Length", 0))
         if "multipart/form-data" not in content_type or not boundary_match or length <= 0:
-            render(self, "<p style='color:#f77'>Nahrání se nepovedlo (chybný formát).</p>")
+            render(self, "<p style='color:var(--chyba)'>Nahrání se nepovedlo (chybný formát).</p>")
             return
 
         filename, body = parse_multipart_file(self.rfile, length, boundary_match.group(1).strip('"'))
         if not filename or not body:
-            render(self, "<p style='color:#f77'>Nahrání se nepovedlo — soubor nenalezen.</p>")
+            render(self, "<p style='color:var(--chyba)'>Nahrání se nepovedlo — soubor nenalezen.</p>")
             return
 
         fname_lower = filename.lower()
@@ -190,7 +223,7 @@ class Handler(http.server.BaseHTTPRequestHandler):
         if not matches:
             render(
                 self,
-                f"<p style='color:#f77'>Soubor <code>{filename}</code> neodpovídá téhle architektuře "
+                f"<p style='color:var(--chyba)'>Soubor <code>{filename}</code> neodpovídá téhle architektuře "
                 f"(<code>{ARCH}</code>, čekám v názvu <code>{expected_suffix}</code>). Nic jsem nezměnil.</p>",
             )
             return
@@ -209,7 +242,7 @@ class Handler(http.server.BaseHTTPRequestHandler):
             pass
 
         version_txt = f" (verze {version})" if version else ""
-        render(self, f"<p style='color:#8e8'>Nahráno{version_txt}. Luna se restartuje…</p>")
+        render(self, f"<p style='color:var(--ok)'>Nahráno{version_txt}. Luna se restartuje…</p>")
 
 
 if __name__ == "__main__":
