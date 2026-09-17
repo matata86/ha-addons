@@ -4,6 +4,19 @@
 
 Server **Luna: Absolute Cinema** (Stremio addon server pro WebShare) jako addon Home Assistantu. Jedna instalace obslouží Stremio, Nuvio i Kodi (doplněk [Nokturno](https://github.com/matata86/plugin.video.nokturno)) na všech zařízeních v síti.
 
+## Webové rozhraní doplňku (nejjednodušší cesta k nové binárce)
+
+Tlačítko **Otevřít webové rozhraní** v Home Assistantu vede na vlastní stránku addonu (port 7130) — ne rovnou na `/setup` Luny. Ukáže:
+
+- jestli Luna běží a jakou má verzi,
+- architekturu, kterou HA potřebuje (`amd64` / `aarch64` / `armv7`),
+- formulář pro nahrání binárky přímo z prohlížeče — s nápovědou na přesný název souboru pro tuhle architekturu,
+- tlačítko na skutečné nastavení Luny (`/setup`).
+
+Po nahrání addon binárku sám ověří (odmítne soubor pro jinou architekturu), uloží do `/share/luna/` a Lunu restartuje — bez restartu celého addonu. Verzi si stránka přečte přímo z názvu nahraného souboru (např. `luna-1_7_0-linux-amd64` → `1.7.0`).
+
+Samba/SFTP do `/share/luna/` (níž) pořád funguje jako alternativa, hlavně když chceš mít binárky pro víc architektur připravené najednou.
+
 ## Binárka Luny
 
 Luna není volně šiřitelná, proto ji addon neobsahuje. Stáhni binárku(y) pro architekturu(y) svého HA z fóra [stremio.cz](https://stremio.cz/d/47-luna-absolute-cinema-addon-pro-prehravani-sifrovaneho-obsahu-z-webshare):
@@ -39,7 +52,7 @@ Addon si binárku uloží do `/data` a při každém startu ji ze sdílené slo�
 
 ## Použití
 
-- Konfigurace: tlačítko **Otevřít webové rozhraní** → `http://IP-HA:7126/setup`
+- Konfigurace Luny (WebShare účet, streamy…): z webového rozhraní doplňku klikni na **Otevřít nastavení Luny**, nebo rovnou `http://IP-HA:7126/setup`
 - Stremio v LAN: instaluj doplněk přes HTTPS adresu, kterou setup vypíše (`https://192-168-x-y.my.local-ip.co:7127/…`)
 - Nuvio a Kodi (Nokturno): stačí HTTP adresa doplňku ze setupu
 
@@ -75,12 +88,12 @@ WantedBy=multi-user.target
 
 `sudo systemctl enable --now luna`
 
-**Docker** (na NAS): binárka je statická, stačí minimální image s host sítí:
+**Docker** (na NAS): od verze 1.7.0 je linuxová binárka dynamicky linkovaná proti glibc — Alpine (musl) ji nespustí (`exec /luna: no such file or directory`). Použij glibc-based image:
 
 ```yaml
 services:
   luna:
-    image: alpine:3
+    image: debian:bookworm-slim
     container_name: luna
     restart: unless-stopped
     network_mode: host      # Luna musí vidět skutečnou IP kvůli instalační adrese doplňku
