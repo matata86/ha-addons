@@ -63,7 +63,7 @@ while true; do
 
   if [ ! -f "$BIN" ]; then
     echo "[luna] CHYBA: chybí binárka Luny pro architekturu $ARCH."
-    echo "[luna]        Nahraj ji přes webové rozhraní doplňku (port $WEBUI_PORT), jako"
+    echo "[luna]        Nahraj ji přes webové rozhraní doplňku (Otevřít webové rozhraní v HA), jako"
     echo "[luna]        /share/luna/luna-$ARCH přes Samba, nebo vyplň luna_binary_url v nastavení."
     sleep 5
     continue

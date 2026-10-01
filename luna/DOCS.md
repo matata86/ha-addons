@@ -6,7 +6,7 @@ Server **Luna: Absolute Cinema** (Stremio addon server pro WebShare) jako addon 
 
 ## Webové rozhraní doplňku (nejjednodušší cesta k nové binárce)
 
-Tlačítko **Otevřít webové rozhraní** v Home Assistantu vede na vlastní stránku addonu (port 7130) — ne rovnou na `/setup` Luny. Ukáže:
+Tlačítko **Otevřít webové rozhraní** v Home Assistantu (nebo panel **Luna** v postranním panelu, když zapneš „Zobrazit v postranním panelu“) vede na vlastní stránku addonu — ne rovnou na `/setup` Luny. Stránka jde jen přes Home Assistant (ingress, jen admin); přímo po síti dostupná není, protože nahraná binárka se hned spouští. Ukáže:
 
 - jestli Luna běží a jakou má verzi,
 - architekturu, kterou HA potřebuje (`amd64` / `aarch64` / `armv7`),

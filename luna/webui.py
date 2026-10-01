@@ -5,6 +5,7 @@ Neřeší nic z Luny samotné (uzavřený binární program) — jen ulehčuje v
 binárky, kterou dřív šlo nahrát jen přes Samba/SFTP do /share/luna/.
 """
 import base64
+import html
 import http.server
 import json
 import os
@@ -18,6 +19,9 @@ VERSION_FILE = "/data/luna_version.txt"
 RESTART_FLAG = "/data/.restart_flag"
 ARCH = os.environ.get("ARCH", "amd64")
 WEBUI_PORT = int(os.environ.get("WEBUI_PORT", "7130"))
+# Ingress Supervisoru chodí jen z téhle adresy (síť hassio). Přímý přístup z LAN,
+# tailnetu ani z jiných doplňků se nepouští — upload by jinak spustil cizí kód.
+INGRESS_CLIENT = "172.30.32.2"
 FORUM_URL = "https://stremio.cz/d/47-luna-absolute-cinema-addon-pro-prehravani-sifrovaneho-obsahu-z-webshare"
 
 ARCH_TO_LINUX_SUFFIX = {"amd64": "linux-amd64", "aarch64": "linux-arm64", "armv7": "linux-arm"}
@@ -145,7 +149,7 @@ input[type=file]::file-selector-button:hover{{background:var(--okraj)}}
   <p class="hint">Stáhni novou Lunu z fóra <a href="{forum_url}" target="_blank" rel="noopener">stremio.cz</a>
   (vlákno „Luna: Absolute Cinema"). Pro tenhle doplněk vyber přesně soubor
   <code>luna-&lt;verze&gt;-{expected_suffix}</code> — žádný windows/macos/apk balíček.</p>
-  <form method="post" action="/upload" enctype="multipart/form-data">
+  <form method="post" action="upload" enctype="multipart/form-data">
     <input type="file" name="binary" accept="*" required>
     <button class="btn btn-primary" type="submit">Nahrát a restartovat Lunu</button>
   </form>
@@ -153,7 +157,7 @@ input[type=file]::file-selector-button:hover{{background:var(--okraj)}}
 </div>
 
 <div class="panel">
-  <a class="btn btn-secondary" href="http://{host}:{luna_port}/setup">⚙️ Otevřít nastavení Luny</a>
+  <a class="btn btn-secondary" href="http://{host}:{luna_port}/setup" target="_blank" rel="noopener">⚙️ Otevřít nastavení Luny</a>
 </div>
 </body></html>
 """
@@ -162,8 +166,8 @@ input[type=file]::file-selector-button:hover{{background:var(--okraj)}}
 def render(handler, message=""):
     version = read_version() or "neznámá (nahraj binárku, nebo počkej na start)"
     running = is_luna_running()
-    host = handler.headers.get("Host", "").split(":")[0] or "HOST"
-    html = PAGE_TMPL.format(
+    host = html.escape(handler.headers.get("Host", "").split(":")[0] or "HOST")
+    page = PAGE_TMPL.format(
         status_class="ok" if running else "bad",
         status_text="✅ Luna běží" if running else "⛔ Luna neběží (nebo se právě restartuje)",
         version=version,
@@ -177,14 +181,13 @@ def render(handler, message=""):
     ).encode("utf-8")
     handler.send_response(200)
     handler.send_header("Content-Type", "text/html; charset=utf-8")
-    handler.send_header("Content-Length", str(len(html)))
+    handler.send_header("Content-Length", str(len(page)))
     handler.end_headers()
-    handler.wfile.write(html)
+    handler.wfile.write(page)
 
 
-def parse_multipart_file(rfile, length, boundary):
+def parse_multipart_file(data, boundary):
     """Vrátí (filename, obsah) prvního souborového pole, nebo (None, None)."""
-    data = rfile.read(length)
     boundary_bytes = ("--" + boundary).encode()
     for part in data.split(boundary_bytes):
         part = part.strip(b"\r\n")
@@ -209,7 +212,27 @@ class Handler(http.server.BaseHTTPRequestHandler):
     def log_message(self, fmt, *args):
         pass
 
+    def ingress_only(self):
+        if self.client_address[0] != INGRESS_CLIENT:
+            self.send_error(403)
+            return False
+        return True
+
+    def read_body(self):
+        # Ingress (HA Core i Supervisor) zahazuje Content-Length a posílá tělo chunked.
+        if "chunked" in self.headers.get("Transfer-Encoding", "").lower():
+            buf = bytearray()
+            while (size := int(self.rfile.readline().split(b";")[0], 16)):
+                buf += self.rfile.read(size)
+                self.rfile.readline()
+            while self.rfile.readline() not in (b"\r\n", b"\n", b""):
+                pass
+            return bytes(buf)
+        return self.rfile.read(int(self.headers.get("Content-Length", 0)))
+
     def do_GET(self):
+        if not self.ingress_only():
+            return
         if self.path in ("/", ""):
             render(self)
         else:
@@ -217,6 +240,8 @@ class Handler(http.server.BaseHTTPRequestHandler):
             self.end_headers()
 
     def do_POST(self):
+        if not self.ingress_only():
+            return
         if self.path != "/upload":
             self.send_response(404)
             self.end_headers()
@@ -224,12 +249,12 @@ class Handler(http.server.BaseHTTPRequestHandler):
 
         content_type = self.headers.get("Content-Type", "")
         boundary_match = re.search(r"boundary=(.+)$", content_type)
-        length = int(self.headers.get("Content-Length", 0))
-        if "multipart/form-data" not in content_type or not boundary_match or length <= 0:
+        data = self.read_body()
+        if "multipart/form-data" not in content_type or not boundary_match or not data:
             render(self, "<p style='color:var(--chyba)'>Nahrání se nepovedlo (chybný formát).</p>")
             return
 
-        filename, body = parse_multipart_file(self.rfile, length, boundary_match.group(1).strip('"'))
+        filename, body = parse_multipart_file(data, boundary_match.group(1).strip('"'))
         if not filename or not body:
             render(self, "<p style='color:var(--chyba)'>Nahrání se nepovedlo — soubor nenalezen.</p>")
             return
@@ -241,7 +266,7 @@ class Handler(http.server.BaseHTTPRequestHandler):
         if not matches:
             render(
                 self,
-                f"<p style='color:var(--chyba)'>Soubor <code>{filename}</code> neodpovídá téhle architektuře "
+                f"<p style='color:var(--chyba)'>Soubor <code>{html.escape(filename)}</code> neodpovídá téhle architektuře "
                 f"(<code>{ARCH}</code>, čekám v názvu <code>{expected_suffix}</code>). Nic jsem nezměnil.</p>",
             )
             return

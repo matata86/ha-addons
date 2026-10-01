@@ -1,7 +1,7 @@
 name: Luna Absolute Cinema
-version: "1.7.0"
+version: "1.7.1"
 slug: luna
-description: Luna Absolute Cinema — Stremio/Nuvio/Kodi server pro přehrávání z WebShare. Novou verzi Luny nahraješ přímo přes webové rozhraní doplňku (tlačítko níž) — jinak si addon binárku vezme z /share/luna/ (rozpozná architekturu automaticky, jde i přepnout v nastavení) nebo ji stáhne z adresy v nastavení.
+description: Luna Absolute Cinema — Stremio/Nuvio/Kodi server pro přehrávání z WebShare. Novou verzi Luny nahraješ přímo přes webové rozhraní doplňku (tlačítko níž, přes HA jen pro adminy) — jinak si addon binárku vezme z /share/luna/ (rozpozná architekturu automaticky, jde i přepnout v nastavení) nebo ji stáhne z adresy v nastavení.
 url: https://github.com/matata86/ha-addons/tree/main/luna
 arch:
   - amd64
@@ -11,17 +11,19 @@ init: false
 startup: services
 boot: auto
 host_network: true
-webui: "http://[HOST]:[PORT:7130]/"
+ingress: true
+ingress_port: 7130
+ingress_stream: true
+panel_icon: mdi:filmstrip
+panel_title: Luna
 map:
   - share:rw
 ports:
   7126/tcp: 7126
   7127/tcp: 7127
-  7130/tcp: 7130
 ports_description:
   7126/tcp: HTTP server Luny (konfigurace na /setup, doplněk pro Nuvio a Kodi)
   7127/tcp: HTTPS server Luny (nutný pro Stremio v LAN přes doménu local-ip)
-  7130/tcp: Webové rozhraní doplňku (stav, nahrání binárky, odkaz na /setup)
 options:
   luna_binary_url: ""
   luna_arch: auto
