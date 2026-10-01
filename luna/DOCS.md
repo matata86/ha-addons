@@ -23,7 +23,7 @@ Luna není volně šiřitelná, proto ji addon neobsahuje. Stáhni binárku(y) p
 
 - **amd64** (PC, Intel NUC, většina VM) → `luna-x_y_z-linux-amd64`
 - **aarch64** (Raspberry Pi ve 64bit HAOS, což je dnes většina RPi instalací) → `luna-x_y_z-linux-arm64`
-- **armv7** (32bit HAOS, starší Raspberry Pi) → `luna-x_y_z-linux-arm`
+- **armv7** (32bit HAOS, starší Raspberry Pi) → od 1.7.2 se addon pro armv7 nenabízí (Supervisor tuto architekturu označil za zastaralou, 32bit HA už podporu nemá)
 
 Soubory nahraj do sdílené složky HA (Samba addon → složka `share`, podsložka `luna`) a přejmenuj podle architektury, kterou obsahují:
 
