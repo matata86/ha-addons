@@ -1,5 +1,9 @@
 # Změny
 
+## 1.7.4
+
+- Upozornění na přesun i v názvu a popisu doplňku v Home Assistantu, odkaz „Další podrobnosti“ vede na nový repozitář.
+
 ## 1.7.3
 
 - **Doplněk se stěhuje.** Tento repozitář se přestane aktualizovat a Luna z něj za čas nenastartuje. Nový repozitář: https://github.com/nokturno-app/ha-addons
