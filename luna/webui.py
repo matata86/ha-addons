@@ -138,6 +138,15 @@ input[type=file]::file-selector-button:hover{{background:var(--okraj)}}
   </div>
 </header>
 
+<div class="panel" style="border-color:var(--chyba)">
+  <h2>⚠️ Doplněk se přestěhoval</h2>
+  <p class="hint">Tenhle repozitář se už nebude aktualizovat a za čas přestane fungovat. Přejdi na nový:
+  <a href="https://github.com/nokturno-app/ha-addons" target="_blank" rel="noopener">github.com/nokturno-app/ha-addons</a>.
+  V Home Assistantu: Nastavení → Doplňky → Obchod → ⋮ → Repozitáře → přidej novou adresu, nainstaluj Lunu odtud
+  a tenhle doplněk odinstaluj. Binárka v <code>share/luna/</code> zůstane, v nastavení Luny (<code>/setup</code>)
+  se ale znovu přihlásíš k WebShare.</p>
+</div>
+
 <div class="panel status-panel">
   <span class="pill {status_class}">{status_text}</span>
   <div class="status-item"><span class="label">Verze</span><span class="value">{version}</span></div>

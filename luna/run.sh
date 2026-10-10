@@ -21,6 +21,7 @@ else
     *) ARCH=amd64 ;;
   esac
 fi
+echo "[luna] !!! TENTO REPOZITÁŘ SE PŘESTĚHOVAL a přestane fungovat. Nový: https://github.com/nokturno-app/ha-addons (Nastavení → Doplňky → Obchod → Repozitáře)."
 echo "[luna] architektura: $ARCH (nastavení: $ARCH_OPT)"
 export ARCH
 export WEBUI_PORT=7130

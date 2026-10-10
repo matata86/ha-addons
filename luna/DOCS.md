@@ -1,5 +1,7 @@
 # Luna Absolute Cinema
 
+> **Doplněk se přestěhoval.** Tento repozitář se přestane aktualizovat. Nový: https://github.com/nokturno-app/ha-addons
+
 [![Ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/matata86)
 
 Server **Luna: Absolute Cinema** (Stremio addon server pro WebShare) jako addon Home Assistantu. Jedna instalace obslouží Stremio, Nuvio i Kodi (doplněk [Nokturno](https://github.com/matata86/plugin.video.nokturno)) na všech zařízeních v síti.
